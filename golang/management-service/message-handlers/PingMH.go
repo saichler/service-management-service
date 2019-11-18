@@ -5,6 +5,7 @@ import (
 	model2 "github.com/saichler/service-management-service/golang/management-service/model"
 	management_service "github.com/saichler/service-management-service/golang/management-service/service"
 	. "github.com/saichler/service-manager/golang/service-manager"
+	utils "github.com/saichler/utils/golang"
 )
 
 type PingMH struct {
@@ -34,7 +35,8 @@ func (m *PingMH) Message(destination *protocol.ServiceID, data []byte, isReply b
 
 func (m *PingMH) Handle(message *protocol.Message) {
 	inv := &model2.Inventory{}
-	inv.UnMarshal(message.Data())
+	bs := utils.NewByteSliceWithData(message.Data(), 0)
+	inv.Object(bs)
 	/*
 		if len(inv.Services) > 0 {
 			utils.Info("Reveived Inventory From:", message.Source().String(), " with:")
@@ -53,8 +55,9 @@ func (m *PingMH) inventory() []byte {
 	for _, service := range services {
 		inv.Services = append(inv.Services, service.ServiceID())
 	}
-	data := inv.Marshal()
-	return data
+	bs := utils.NewByteSlice()
+	inv.Bytes(bs)
+	return bs.Data()
 }
 
 func (m *PingMH) Request(args ...interface{}) (interface{}, error) {

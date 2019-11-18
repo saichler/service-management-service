@@ -10,24 +10,21 @@ type Inventory struct {
 	Services []*protocol.ServiceID
 }
 
-func (inv *Inventory) Marshal() ([]byte) {
-	bs := utils.NewByteSlice()
-	inv.SID.Marshal(bs)
+func (inv *Inventory) Bytes(bs *utils.ByteSlice) {
+	inv.SID.Bytes(bs)
 	bs.AddInt(len(inv.Services))
 	for _, sid := range inv.Services {
-		sid.Marshal(bs)
+		sid.Bytes(bs)
 	}
-	return bs.Data()
 }
 
-func (inv *Inventory) UnMarshal(data []byte) {
-	bs := utils.NewByteSliceWithData(data, 0)
+func (inv *Inventory) Object(bs *utils.ByteSlice) {
 	inv.SID = &protocol.ServiceID{}
-	inv.SID.Unmarshal(bs)
+	inv.SID.Object(bs)
 	size := bs.GetInt()
 	inv.Services = make([]*protocol.ServiceID, size)
 	for i := 0; i < size; i++ {
 		inv.Services[i] = &protocol.ServiceID{}
-		inv.Services[i].Unmarshal(bs)
+		inv.Services[i].Object(bs)
 	}
 }

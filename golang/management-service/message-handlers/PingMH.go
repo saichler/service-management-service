@@ -36,7 +36,7 @@ func (m *PingMH) Message(destination *protocol.ServiceID, data []byte, isReply b
 func (m *PingMH) Handle(message *protocol.Message) {
 	inv := &model2.Inventory{}
 	bs := utils.NewByteSliceWithData(message.Data(), 0)
-	inv.Object(bs)
+	inv.Read(bs)
 	/*
 		if len(inv.Services) > 0 {
 			utils.Info("Reveived Inventory From:", message.Source().String(), " with:")
@@ -56,7 +56,7 @@ func (m *PingMH) inventory() []byte {
 		inv.Services = append(inv.Services, service.ServiceID())
 	}
 	bs := utils.NewByteSlice()
-	inv.Bytes(bs)
+	inv.Write(bs)
 	return bs.Data()
 }
 
